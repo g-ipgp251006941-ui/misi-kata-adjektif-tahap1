@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Misi Angkasa: Kata Adjektif Tahap 1</title>
+<style>
+:root{--cyan:#00eaff;--pink:#ff35d2;--gold:#ffca38;--bg:#030713;--panel:#0c172b}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% 110%,#10274a 0,#030713 60%);color:#f5f8ff;font-family:Arial,Helvetica,sans-serif;padding:18px}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;background-image:radial-gradient(#fff 1px,transparent 1.5px),radial-gradient(#8beaff 1px,transparent 1.5px);background-size:91px 91px,137px 137px;background-position:0 0,42px 31px;opacity:.35}
+.game{position:relative;z-index:1;max-width:1120px;margin:auto;border:1px solid var(--cyan);border-radius:18px;padding:15px;background:rgba(2,7,22,.96);box-shadow:0 0 25px #00eaff33}
+header{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:7px 8px 15px;flex-wrap:wrap}
+.brand{font-size:clamp(19px,3vw,27px);font-weight:900;letter-spacing:1px;color:var(--cyan);text-shadow:0 0 12px #00eaff}
+.brand span{color:#fff}
+.stats{display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+.stat small{display:block;color:var(--cyan);font-weight:bold;font-size:11px;letter-spacing:1px}.stat strong{font-size:23px;color:#fff}
+.lives{color:#ff7898;font-size:22px;letter-spacing:4px}
+.timer{min-width:145px}.track{height:9px;border:1px solid #22617b;border-radius:20px;background:#14283b;overflow:hidden;margin-top:5px}.fill{height:100%;width:100%;background:linear-gradient(90deg,#00cbd8,#48e6a2);transition:width .2s}
+.question{padding:16px 12px;text-align:center;border:1px solid var(--cyan);border-radius:14px;background:linear-gradient(120deg,#101b31,#0a1428);box-shadow:0 0 18px #00eaff22}
+.kicker{font-size:12px;color:var(--cyan);font-weight:bold;letter-spacing:2px}.question h1{font-size:clamp(18px,3vw,27px);margin:8px 0 4px;line-height:1.35}.question p{color:#b9c9dc;margin:5px 0 0;font-size:14px}
+.arena{position:relative;min-height:430px;margin-top:12px;border:1px solid #07506a;border-radius:14px;overflow:hidden;background:radial-gradient(ellipse at 50% 105%,#11294b 0%,#030611 55%,#01030b 100%)}
+.arena:before{content:"";position:absolute;inset:0;background-image:radial-gradient(#fff 1px,transparent 1.6px);background-size:83px 83px;opacity:.35}
+.targets{position:relative;z-index:1;display:flex;justify-content:space-evenly;align-items:center;gap:18px;flex-wrap:wrap;padding:55px 18px 125px;min-height:330px}
+.target{width:clamp(112px,18vw,155px);height:clamp(112px,18vw,155px);border:3px solid var(--cyan);border-radius:50%;background:rgba(14,27,51,.94);color:#fff;font-size:clamp(14px,2vw,18px);font-weight:bold;padding:12px;cursor:pointer;box-shadow:0 0 12px #00eaff66,inset 0 0 18px #00eaff16;transition:.18s;display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.25}
+.target:hover,.target:focus{transform:scale(1.06);outline:none;background:#12304b;box-shadow:0 0 24px #00eaffaa}
+.target.correct{border-color:#52ff9b;box-shadow:0 0 25px #52ff9b;background:#10452f}
+.target.wrong{border-color:#ff4e83;box-shadow:0 0 22px #ff4e83;background:#50172d}
+.cannon{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);z-index:2;text-align:center;color:var(--cyan);font-size:13px}
+.ship{font-size:38px;filter:drop-shadow(0 0 10px #00eaff);display:block}
+.hint{margin-top:5px}
+.feedback{min-height:26px;text-align:center;padding:8px 4px;color:#ffdc68;font-weight:bold}
+.actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin:4px 0 2px}
+button.action{border:1px solid var(--cyan);border-radius:999px;padding:10px 20px;background:#10253d;color:#fff;font-weight:bold;cursor:pointer}
+button.action.primary{background:linear-gradient(90deg,#00aabd,#1268a2);border:0}
+button.action:disabled{opacity:.4;cursor:not-allowed}
+.overlay{position:absolute;inset:0;z-index:5;display:flex;align-items:center;justify-content:center;background:#020713eF;padding:20px;text-align:center}
+.dialog{max-width:550px;border:1px solid var(--cyan);border-radius:18px;padding:25px;background:#0c172b;box-shadow:0 0 25px #00eaff44}
+.dialog h2{color:var(--cyan);margin-top:0}.dialog p{line-height:1.55;color:#d5e2f0}
+.hidden{display:none!important}
+@media(max-width:600px){body{padding:8px}.game{padding:9px}.stats{gap:12px}.arena{min-height:470px}.targets{padding-top:35px;gap:12px}.target{width:120px;height:120px}.timer{min-width:115px}}
+</style>
+</head>
+<body>
+<main class="game">
+<header>
+  <div class="brand">🚀 MISI ANGKASA <span>| KATA ADJEKTIF</span></div>
+  <div class="stats">
+    <div class="stat"><small>TAHAP</small><strong id="level">1/8</strong></div>
+    <div class="stat"><small>SKOR</small><strong id="score">0</strong></div>
+    <div class="stat"><small>NYAWA</small><div class="lives" id="lives">🚀 🚀 🚀</div></div>
+    <div class="stat timer"><small>MASA <b id="timeText">20s</b></small><div class="track"><div class="fill" id="timeFill"></div></div></div>
+  </div>
+</header>
+<section class="question">
+  <div class="kicker">SOALAN BAHASA MELAYU • TAHAP 1</div>
+  <h1 id="prompt">Kenal pasti kata adjektif dalam ayat ini.</h1>
+  <p id="sentence">Bunga itu sangat cantik.</p>
+</section>
+<section class="arena" aria-label="Kawasan permainan">
+  <div class="targets" id="targets"></div>
+  <div class="cannon"><span class="ship">🛸</span><div class="hint">☝️ Klik / sentuh sasaran yang mengandungi kata adjektif</div></div>
+  <div class="overlay" id="startOverlay">
+    <div class="dialog">
+      <h2>🌌 SELAMAT DATANG, EJEN!</h2>
+      <p>Misi kamu ialah mencari <b>kata adjektif</b> dalam setiap ayat. Tembak jawapan yang betul sebelum masa tamat. Kamu mempunyai 3 nyawa.</p>
+      <p><b>Tip:</b> Kata adjektif menerangkan sifat atau keadaan sesuatu seperti warna, bentuk, ukuran, rasa dan perasaan.</p>
+      <button class="action primary" id="startBtn">MULA MISI 🚀</button>
+    </div>
+  </div>
+  <div class="overlay hidden" id="endOverlay">
+    <div class="dialog">
+      <h2 id="endTitle">MISI SELESAI!</h2>
+      <p id="endMessage"></p>
+      <button class="action primary" id="restartBtn">MAIN SEMULA</button>
+    </div>
+  </div>
+</section>
+<div class="feedback" id="feedback" aria-live="polite">Bersedia untuk memulakan misi!</div>
+<div class="actions">
+  <button class="action" id="restartSmall">↻ Ulang permainan</button>
+  <button class="action" id="soundBtn">🔊 Bunyi: ON</button>
+</div>
+</main>
+<script>
+const questions=[
+ {sentence:"Bunga raya itu sangat cantik.",answer:"cantik",options:["bunga","cantik","itu"],why:"Cantik menerangkan rupa bunga."},
+ {sentence:"Baju adik berwarna merah.",answer:"merah",options:["baju","adik","merah"],why:"Merah menerangkan warna baju."},
+ {sentence:"Bola itu berbentuk bulat.",answer:"bulat",options:["bola","berbentuk","bulat"],why:"Bulat menerangkan bentuk bola."},
+ {sentence:"Gajah itu sangat besar.",answer:"besar",options:["gajah","sangat","besar"],why:"Besar menerangkan ukuran gajah."},
+ {sentence:"Air kopi itu pahit.",answer:"pahit",options:["air","kopi","pahit"],why:"Pahit menerangkan rasa kopi."},
+ {sentence:"Adik berasa gembira.",answer:"gembira",options:["adik","berasa","gembira"],why:"Gembira menerangkan perasaan adik."},
+ {sentence:"Jalan ke sekolah itu jauh.",answer:"jauh",options:["jalan","sekolah","jauh"],why:"Jauh menerangkan jarak."},
+ {sentence:"Cuaca hari ini panas.",answer:"panas",options:["cuaca","hari","panas"],why:"Panas menerangkan keadaan cuaca."}
+];
+let index=0,score=0,lives=3,time=20,timer=null,locked=false,sound=true,playing=false;
+const $=id=>document.getElementById(id);
+function updateStats(){ $("level").textContent=Math.min(index+1,8)+"/8";$("score").textContent=score;$("lives").textContent="🚀 ".repeat(lives).trim();$("timeText").textContent=time+"s";$("timeFill").style.width=(time/20*100)+"%";}
+function beep(freq=600,duration=.1){if(!sound)return;try{const c=new (window.AudioContext||window.webkitAudioContext)(),o=c.createOscillator(),g=c.createGain();o.frequency.value=freq;o.connect(g);g.connect(c.destination);g.gain.value=.06;o.start();o.stop(c.currentTime+duration);o.onended=()=>c.close();}catch(e){}}
+function stopTimer(){if(timer){clearInterval(timer);timer=null;}}
+function loadQuestion(){
+ stopTimer();locked=false;time=20;updateStats();
+ const q=questions[index];$("sentence").textContent=q.sentence;
+ $("prompt").textContent="Pilih kata adjektif dalam ayat ini:";
+ $("feedback").textContent="Sasarkan jawapan yang betul!";
+ const box=$("targets");box.innerHTML="";
+ q.options.forEach((opt,i)=>{const b=document.createElement("button");b.className="target";b.textContent=opt;b.setAttribute("aria-label","Pilihan "+opt);b.onclick=()=>choose(opt,b);box.appendChild(b);});
+ timer=setInterval(()=>{if(locked)return;time--;updateStats();if(time<=0){stopTimer();wrong(null,"Masa tamat!");}},1000);
+}
+function choose(value,button){if(locked||!playing)return;const q=questions[index];if(value===q.answer){locked=true;stopTimer();button.classList.add("correct");score+=10;updateStats();$("feedback").textContent="✓ Tepat! "+q.why;beep(880,.16);document.querySelectorAll(".target").forEach(b=>b.disabled=true);setTimeout(next,1400);}else{button.classList.add("wrong");button.disabled=true;beep(180,.2);$("feedback").textContent="Belum tepat. Cuba sasaran yang lain!";}}
+function wrong(button,msg){if(locked)return;locked=true;stopTimer();lives--;updateStats();$("feedback").textContent="✕ "+msg+" Jawapan: "+questions[index].answer+" — "+questions[index].why;beep(150,.25);document.querySelectorAll(".target").forEach(b=>{b.disabled=true;if(b.textContent===questions[index].answer)b.classList.add("correct");});setTimeout(()=>{if(lives<=0)finish(false);else next();},1900);}
+function next(){index++;if(index>=questions.length){finish(true);return;}if(lives<=0){finish(false);return;}loadQuestion();}
+function finish(won){playing=false;stopTimer();$("endTitle").textContent=won?"🎉 TAHNIAH, EJEN!":"🛰️ MISI TAMAT";$("endMessage").innerHTML=(won?"Kamu berjaya menamatkan semua 8 soalan!":"Nyawa kamu telah habis.")+"<br><br>Skor akhir: <b>"+score+"/80</b><br>"+(score>=60?"Hebat! Kamu semakin mahir mengenal kata adjektif.":"Terus berlatih. Kamu pasti boleh melakukannya!") ;$("endOverlay").classList.remove("hidden");}
+function start(){index=0;score=0;lives=3;playing=true;$("startOverlay").classList.add("hidden");$("endOverlay").classList.add("hidden");loadQuestion();}
+$("startBtn").onclick=start;$("restartBtn").onclick=start;$("restartSmall").onclick=()=>{if(playing){if(confirm("Mulakan semula permainan?"))start();}else start();};
+$("soundBtn").onclick=()=>{sound=!sound;$("soundBtn").textContent=sound?"🔊 Bunyi: ON":"🔇 Bunyi: OFF";};
+updateStats();
+</script>
+</body>
+</html>
